@@ -4,7 +4,7 @@ module Roo
     class Sheet
       extend Forwardable
 
-      delegate [:styles, :workbook, :shared_strings, :rels_files, :sheet_files, :comments_files, :image_rels] => :@shared
+      delegate [:styles, :workbook, :shared_strings, :rels_files, :sheet_files, :comments_files, :image_rels, :external_link_rels] => :@shared
 
       attr_reader :images
 

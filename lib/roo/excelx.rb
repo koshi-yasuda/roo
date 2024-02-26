@@ -26,7 +26,7 @@ module Roo
     require 'roo/excelx/format'
     require 'roo/excelx/images'
 
-    delegate [:styles, :workbook, :shared_strings, :rels_files, :sheet_files, :comments_files, :image_rels, :image_files] => :@shared
+    delegate [:styles, :workbook, :shared_strings, :rels_files, :sheet_files, :comments_files, :image_rels, :image_files, :external_link_rels] => :@shared
     ExceedsMaxError = Class.new(StandardError)
 
     # initialization and opening of a spreadsheet file
@@ -292,6 +292,14 @@ module Roo
       end
     end
 
+    def external_link_names
+      relationships_list = external_link_rels.map { |rels_path| Relationships.new(rels_path) }
+      relationships_list.map do |relationships|
+        _, relative_rel = relationships.to_a.min_by { |_, rel| rel["Target"].length }
+        relative_rel["Target"]
+      end
+    end
+
     # Yield an array of Excelx::Cell
     # Takes options for sheet, pad_cells, and max_rows
     def each_row_streaming(options = {})
@@ -460,6 +468,9 @@ module Roo
           # Extracting drawing relationships to make images lists for each sheet
           nr = Regexp.last_match[1].to_i
           image_rels[nr - 1] = "#{@tmpdir}/roo_image_rels#{nr}"
+        when /externallink([0-9]+).xml.rels$/
+          nr = Regexp.last_match[1].to_i
+          external_link_rels[nr - 1] = "#{@tmpdir}/roo_external_link_rels#{nr}"
         end
 
         entry.extract(path) if path
