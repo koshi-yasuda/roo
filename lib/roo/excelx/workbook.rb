@@ -39,6 +39,25 @@ module Roo
         end
       end
 
+      def defined_names_in_book
+        defined_name_objects_in_book = doc.xpath('//definedName').select do |defined_name_object|
+          !defined_name_object['localSheetId']
+        end
+        defined_name_objects_in_book.map { |defined_name_object| defined_name_object['name'] }
+      end
+
+      def defined_names_in_sheets
+        defined_name_objects_in_sheets = doc.xpath('//definedName').select do |defined_name_object|
+          defined_name_object['localSheetId']
+        end
+        defined_name_objects_in_sheets.each_with_object({}) do |defined_name_object, result|
+          local_sheet_id = defined_name_object['localSheetId'].to_i
+          local_sheet_name = sheets.dig(local_sheet_id, 'name')
+          result[local_sheet_name] ||= []
+          result[local_sheet_name] << defined_name_object['name']
+        end
+      end
+
       def base_timestamp
         @base_timestamp ||= base_date.to_datetime.to_time.to_i
       end
