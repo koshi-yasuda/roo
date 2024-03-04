@@ -292,11 +292,11 @@ module Roo
       end
     end
 
-    def external_link_names
+    def external_link_targets
       relationships_list = external_link_rels.map { |rels_path| Relationships.new(rels_path) }
       relationships_list.map do |relationships|
-        _, relative_rel = relationships.to_a.min_by { |_, rel| rel["Target"].length }
-        relative_rel["Target"]
+        _, relationship = relationships.to_a.min_by { |_, rel| rel['Id'] }
+        relationship['Target']
       end
     end
 
